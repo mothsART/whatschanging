@@ -1,30 +1,31 @@
 extern crate gtk;
-extern crate cairo;
 extern crate gdk;
 extern crate gdk_pixbuf;
 
 use gtk::prelude::*;
 use gtk::DrawingArea;
-use cairo::{Context, Format, ImageSurface};
 use gdk_pixbuf::{Pixbuf};
 use gdk::ContextExt;
 
+#[derive(Debug)]
 struct Diff {
-    width:     i32,
-    height:    i32,
-    channel:   i32,
-    rowstride: i32,
-    img1:      Pixbuf,
-    img2:      Pixbuf,
-    buf1:      *const u8,
-    buf2:      *const u8
+    width:        i32,
+    height:       i32,
+    channel:      i32,
+    rowstride:    i32,
+    last_row_len: i32,
+    img1:         Pixbuf,
+    img2:         Pixbuf,
+    buf1:         *const u8,
+    buf2:         *const u8
 }
 
 impl Diff {
     pub fn new(path1: &'static str, path2: &'static str, width: i32, height: i32) -> Diff {
-        let img1 = Pixbuf::new_from_file_at_size(path1, width, height).unwrap();
-        let channel = img1.get_n_channels();
-        let rowstride = img1.get_rowstride();
+        let img1         = Pixbuf::new_from_file_at_size(path1, width, height).unwrap();
+        let channel      = img1.get_n_channels();
+        let rowstride    = img1.get_rowstride();
+        let last_row_len = width * ((3 * 8 + 7) / 8);
         let img2 = Pixbuf::new_from_file_at_size(path2, width, height).unwrap();
         let buf1;
         let buf2;
@@ -33,14 +34,15 @@ impl Diff {
             buf2 = img2.get_pixels(). as_mut_ptr();
         }
         Diff {
-            width:     width,
-            height:    height,
-            channel:   channel,
-            rowstride: rowstride,
-            img1:      img1,
-            img2:      img2,
-            buf1:      buf1,
-            buf2:      buf2
+            width:        width,
+            height:       height,
+            channel:      channel,
+            rowstride:    rowstride,
+            last_row_len: last_row_len,
+            img1:         img1,
+            img2:         img2,
+            buf1:         buf1,
+            buf2:         buf2
         }
     }
 
@@ -96,34 +98,36 @@ fn main() {
     window.set_title("Diff Images");
     window.set_position(gtk::WindowPosition::Center);
     let drawing_area = Box::new(DrawingArea::new)();
-    window.set_default_size(800, 600);
+    window.set_default_size(1046, 382);
         window.connect_delete_event(|_, _| {
         gtk::main_quit();
         Inhibit(false)
     });
     window.add(&drawing_area);
-
     let mut diff = Diff::new(
-        "file1.1836x3264.png",
-        "file2.1836x3264.png",
-        1836,
-        3264
+        "examples/example_1.png",
+        "examples/example_2.png",
+        346,
+        382
     );
     let vec = diff.compare();
-    let img = Pixbuf::new_from_vec(vec, 0, false, 8, diff.width, diff.height, diff.rowstride);
-
-    drawing_area.connect_draw(move |w, cr| {
-        cr.scale(0.2, 0.2);
+    let mut has_alpha = false;
+    if diff.channel > 3 {
+        has_alpha = true;
+    }
+    let img = Pixbuf::new_from_vec(vec, 0, has_alpha, 8, diff.width, diff.height, diff.last_row_len);
+    drawing_area.connect_draw(move |_w, cr| {
+        cr.scale(1., 1.);
         cr.set_source_pixbuf(&diff.img1, 0f64, 0f64);
         cr.paint();
 
-        cr.translate(400., 0.);
+        cr.translate(350., 0.);
         //cr.scale(5., 5.);
         cr.set_source_pixbuf(&diff.img2, 0f64, 0f64);
         cr.paint();
         //cr.paint_with_alpha(0.5);
 
-        cr.translate(400., 0.);
+        cr.translate(350., 0.);
         cr.set_source_pixbuf(&img, 0f64, 0f64);
         cr.paint();
         Inhibit(false)
