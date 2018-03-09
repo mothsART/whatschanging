@@ -30,8 +30,8 @@ impl Diff {
         let buf1;
         let buf2;
         unsafe {
-            buf1 = img1.get_pixels(). as_mut_ptr();
-            buf2 = img2.get_pixels(). as_mut_ptr();
+            buf1 = img1.get_pixels().as_mut_ptr();
+            buf2 = img2.get_pixels().as_mut_ptr();
         }
         Diff {
             width:        width,
@@ -46,22 +46,12 @@ impl Diff {
         }
     }
 
-    fn get_colors_from_buf1_by_coordinates(&self, x: i32, y: i32) -> (u8, u8, u8) {
+    fn get_colors(&self, buf: *const u8, x: i32, y: i32) -> (u8, u8, u8) {
         unsafe {
             (
-                *self.buf1.offset((x * self.channel + y * self.rowstride) as isize),
-                *self.buf1.offset((x * self.channel + y * self.rowstride + 1) as isize),
-                *self.buf1.offset((x * self.channel + y * self.rowstride + 2) as isize)
-            )
-        }
-    }
-
-    fn get_colors_from_buf2_by_coordinates(&self, x: i32, y: i32) -> (u8, u8, u8) {
-        unsafe {
-            (
-                *self.buf2.offset((x * self.channel + y * self.rowstride) as isize),
-                *self.buf2.offset((x * self.channel + y * self.rowstride + 1) as isize),
-                *self.buf2.offset((x * self.channel + y * self.rowstride + 2) as isize)
+                *buf.offset((x * self.channel + y * self.rowstride) as isize),
+                *buf.offset((x * self.channel + y * self.rowstride + 1) as isize),
+                *buf.offset((x * self.channel + y * self.rowstride + 2) as isize)
             )
         }
     }
@@ -70,8 +60,8 @@ impl Diff {
         let mut vec = Vec::new();
         for y in 0..self.height {
             for x in 0..self.width {
-                let pix_buf1 = self.get_colors_from_buf1_by_coordinates(x, y);
-                let pix_buf2 = self.get_colors_from_buf2_by_coordinates(x, y);
+                let pix_buf1 = self.get_colors(self.buf1, x, y);
+                let pix_buf2 = self.get_colors(self.buf2, x, y);
                 if pix_buf1 == pix_buf2 {
                     vec.push(0);
                     vec.push(0);
