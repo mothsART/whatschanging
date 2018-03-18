@@ -7,5 +7,5 @@ Compare 2 pictures.
 French presentation : [https://mothsart.github.io/diff-image.html](https://mothsart.github.io/diff-image.html)
 
 ```bash
-  cargo run --bin image
+  cargo run
 ```
