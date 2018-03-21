@@ -1,0 +1,5 @@
+debian/whatschanging
+debian/files
+debian/debhelper-build-stamp
+debian/whatschanging.debhelper.log
+debian/whatschanging.substvars

@@ -1,0 +1,8 @@
+target/release/whatschanging usr/bin
+
+debian/whatschanging.desktop usr/share/applications
+icon.png                     usr/share/applications/whatschanging
+
+README.md                    usr/share/doc/whatschanging
+
+LICENSE                      usr/share/licenses/whatschanging

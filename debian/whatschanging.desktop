@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=WhatsChanging
+Comment=Compare 2 pictures.
+Exec=whatschanging
+Icon=/usr/share/applications/whatschanging/icon.png
+Terminal=false
+Type=Application
+Categories=Graphics;Illustration;
+Keywords=diff;picture;
+Name[fr_FR]=whatschanging
