@@ -1,6 +1,12 @@
 [package]
 name = "whatschanging"
 version = "0.0.1"
+license = "BSD"
+authors = ["Jérémie Ferry alias mothsART <jerem.ferry@gmail.com>"]
+description = "Compare 2 pictures."
+keywords = [ "gtk", "linux", "diff", "pictures" ]
+repository = "https://github.com/mothsART/whatschanging"
+readme = "README.md"
 
 [dependencies]
 glib = "^0"
