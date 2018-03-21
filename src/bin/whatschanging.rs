@@ -179,7 +179,7 @@ fn main() {
         return;
     }
     let window = gtk::Window::new(gtk::WindowType::Toplevel);
-    window.set_title("Diff Images");
+    window.set_title("Whatschanging : compare 2 pictures");
     window.set_position(gtk::WindowPosition::Center);
     let drawing_area = DrawingAreaRc::new(RefCell::new(
         Box::new(DrawingArea::new)()
